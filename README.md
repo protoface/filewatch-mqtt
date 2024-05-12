@@ -1,6 +1,6 @@
 # Configuration
 
-```json
+```jsonc
 {
     // File Config
     "RootMachineDir": "C:\\tmp", // required - no default set    
