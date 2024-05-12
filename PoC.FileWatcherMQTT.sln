@@ -4,15 +4,27 @@ VisualStudioVersion = 17.10.34902.84
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PoC.FileWatcherMQTT", "PoC.FileWatcherMQTT\PoC.FileWatcherMQTT.csproj", "{B1367E7E-5178-4CA5-BAAB-8790C4CCA31F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PoC.Worker", "PoC.Worker\PoC.Worker.csproj", "{CF4FDEAA-3129-49CD-8050-307A97A7357A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PoC.Runner", "PoC.Runner\PoC.Runner.csproj", "{5B1BA484-5FE5-426D-BC4A-A6AE87D17F8B}"
+EndProject
 Global
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0DAF58AF-B353-4E5C-93B7-38C28ECD60E3}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5B1BA484-5FE5-426D-BC4A-A6AE87D17F8B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5B1BA484-5FE5-426D-BC4A-A6AE87D17F8B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5B1BA484-5FE5-426D-BC4A-A6AE87D17F8B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5B1BA484-5FE5-426D-BC4A-A6AE87D17F8B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B1367E7E-5178-4CA5-BAAB-8790C4CCA31F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B1367E7E-5178-4CA5-BAAB-8790C4CCA31F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B1367E7E-5178-4CA5-BAAB-8790C4CCA31F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B1367E7E-5178-4CA5-BAAB-8790C4CCA31F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CF4FDEAA-3129-49CD-8050-307A97A7357A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF4FDEAA-3129-49CD-8050-307A97A7357A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF4FDEAA-3129-49CD-8050-307A97A7357A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CF4FDEAA-3129-49CD-8050-307A97A7357A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

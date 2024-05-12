@@ -1,0 +1,13 @@
+{
+  "profiles": {
+    "PoC.Worker": {
+      "commandName": "Project",
+      "commandLineArgs": "-c \"C:\\Users\\felix\\source\\repos\\PoC.FileWatcherMQTT\\PoC.FileWatcherMQTT\\bin\\Release\\net8.0\\win-x64\\publish\\asdf.json\"",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      },
+      "dotnetRunMessages": true
+    }
+  },
+  "$schema": "https://json.schemastore.org/launchsettings.json"
+}
