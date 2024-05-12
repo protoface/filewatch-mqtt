@@ -1,0 +1,24 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.34902.84
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PoC.FileWatcherMQTT", "PoC.FileWatcherMQTT\PoC.FileWatcherMQTT.csproj", "{B1367E7E-5178-4CA5-BAAB-8790C4CCA31F}"
+EndProject
+Global
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0DAF58AF-B353-4E5C-93B7-38C28ECD60E3}
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B1367E7E-5178-4CA5-BAAB-8790C4CCA31F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B1367E7E-5178-4CA5-BAAB-8790C4CCA31F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B1367E7E-5178-4CA5-BAAB-8790C4CCA31F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B1367E7E-5178-4CA5-BAAB-8790C4CCA31F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
