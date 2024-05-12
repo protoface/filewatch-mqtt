@@ -89,10 +89,17 @@ public class Runner
 	{
 
 		// connect & subscribe to MQTT
-		await client.ConnectAsync(new MqttClientOptionsBuilder()
-			.WithTcpServer(options.Server, options.Port)
-			.WithClientId(options.ClientId)
-			.Build(), cancellationToken);
+		var clientOptions = new MqttClientOptionsBuilder()
+					.WithTcpServer(options.Server, options.Port)
+					.WithClientId(options.ClientId);
+
+		// authentication is optional
+		if (options.AuthMethod != null && options.AuthDataBase64 != null)
+		{
+			clientOptions.WithAuthentication(options.AuthMethod, Convert.FromBase64String(options.AuthDataBase64))
+		}
+
+		await client.ConnectAsync(clientOptions.Build(), cancellationToken);
 
 		await client.SubscribeAsync(new MqttClientSubscribeOptionsBuilder()
 			.WithTopicFilter(new MqttTopicFilterBuilder().WithTopic($"{options.RootTopic}/+/{options.InTopic}").Build())

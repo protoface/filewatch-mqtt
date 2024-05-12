@@ -4,9 +4,9 @@ VisualStudioVersion = 17.10.34902.84
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PoC.FileWatcherMQTT", "PoC.FileWatcherMQTT\PoC.FileWatcherMQTT.csproj", "{B1367E7E-5178-4CA5-BAAB-8790C4CCA31F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PoC.Worker", "PoC.Worker\PoC.Worker.csproj", "{CF4FDEAA-3129-49CD-8050-307A97A7357A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PoC.Worker", "PoC.Worker\PoC.Worker.csproj", "{CF4FDEAA-3129-49CD-8050-307A97A7357A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PoC.Runner", "PoC.Runner\PoC.Runner.csproj", "{5B1BA484-5FE5-426D-BC4A-A6AE87D17F8B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PoC.Runner", "PoC.Runner\PoC.Runner.csproj", "{5B1BA484-5FE5-426D-BC4A-A6AE87D17F8B}"
 EndProject
 Global
 	GlobalSection(ExtensibilityGlobals) = postSolution

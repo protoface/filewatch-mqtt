@@ -29,4 +29,7 @@ public struct Configuration()
 
 	[JsonRequired]
 	public Dictionary<string, int> Format { get; set; } = new();
+
+	public string? AuthMethod { get; set; } = null;
+	public string? AuthDataBase64 { get; set; } = null;
 }

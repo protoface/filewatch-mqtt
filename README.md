@@ -26,6 +26,10 @@
         "dolor": 3,
         "si": 2,
         "amet": 4
-    }
+    },
+
+    // authentication is optional
+    "AuthMethod" : null,
+    "AuthDataBase64" : null
 }
 ```
