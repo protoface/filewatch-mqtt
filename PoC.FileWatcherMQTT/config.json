@@ -1,7 +1,23 @@
 ﻿{
-	"RootMachineDir": "C:\\tmp",
-	"Format": {
+	"RootMachineDir": "C:\\StgCCM\\MAC",
+	"MTSFormat": { // TODO: Check Spec
 		"Status": 0,
-		"CustomerName": 1
-	}
+		"Version": 1,
+		"Teilung": 2,
+		"User": 3,
+		"AktuelleProduktion": 4,
+		"Message": 5,
+		// "5": 6,
+		// "0": 7,
+		// "0": 8,
+		// "0": 9,
+		// "0": 10,
+		// "50": 11,
+		// "1": 12,
+		// "-2": 13,
+		"LetzteProduktion": 14
+	},
+	"RootTopic": "stgccm/mac",
+	"MTSFileName": "MACTOSVR.TXT",
+	"STMFileName": "SvrToMac.txt"
 }

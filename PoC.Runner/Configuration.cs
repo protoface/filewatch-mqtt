@@ -9,7 +9,7 @@ public struct Configuration()
 	public static Configuration FromJSON(string json)
 	{
 		var config = JsonSerializer.Deserialize(json, JsonContext.Default.Configuration);
-		if (config.Format.Values.GroupBy(e => e).Any(e => e.Count() > 1))
+		if (config.MTSFormat.Values.GroupBy(e => e).Any(e => e.Count() > 1))
 			throw new("Configuration: Format: each index can only be used once");
 		return config;
 	}
@@ -28,7 +28,7 @@ public struct Configuration()
 	public string InTopic { get; set; } = "in";
 
 	[JsonRequired]
-	public Dictionary<string, int> Format { get; set; } = new();
+	public Dictionary<string, int> MTSFormat { get; set; } = new();
 
 	public string? AuthMethod { get; set; } = null;
 	public string? AuthDataBase64 { get; set; } = null;

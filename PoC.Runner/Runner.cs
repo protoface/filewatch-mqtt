@@ -7,32 +7,44 @@ namespace PoC.Runner;
 
 public class Runner
 {
-	Configuration options;
-	IMqttClient client = new MqttFactory().CreateMqttClient();
-	ICustomLogger? logger;
+	readonly Configuration options;
+	readonly IMqttClient client = new MqttFactory().CreateMqttClient();
+	readonly ICustomLogger? logger;
+
 	private Task Client_ApplicationMessageReceivedAsync(MqttApplicationMessageReceivedEventArgs arg)
 	{
+		string topic = arg.ApplicationMessage.Topic.TrimStart(options.RootTopic.ToCharArray());
+		string[] fileName = [options.STMFileName];
+
 		// Extract mac
-		string topic = arg.ApplicationMessage.Topic;
-		string macString = topic.TrimEnd(options.InTopic.ToCharArray()).Split('/', StringSplitOptions.RemoveEmptyEntries).Last();
+		// string macString = topic.TrimEnd(options.InTopic.ToCharArray()).Split('/', StringSplitOptions.RemoveEmptyEntries).Last();
+		string[] strings = topic.Split('/', StringSplitOptions.RemoveEmptyEntries);
+		string macString = strings[0];
+
+		if (strings[1] != options.InTopic)
+			return Task.CompletedTask;
+
 		if (!int.TryParse(macString, out var mac))
 			return Task.CompletedTask;
 
-		// Parse payload
-		Dictionary<string, string>? payload = JsonSerializer.Deserialize(arg.ApplicationMessage.PayloadSegment, JsonContext.Default.DictionaryStringString);
-		if (payload is null)
-			return Task.CompletedTask;
 
-		// Build CSV
-		string csv = string.Join(options.CSVSeparator, payload.OrderBy(e => options.Format[e.Key]).Select(e => e.Value));
+		if (strings[^1] != options.InTopic)
+		{
+			fileName = strings[2..];
+			// fileName = strings[^1];
+			// topic = topic.TrimEnd(fileName.ToCharArray()).TrimEnd('/');
+		}
 
+		// Get Payload
+		string payload = arg.ApplicationMessage.ConvertPayloadToString();
 		// Build File Path
-		string filePath = Path.Combine(options.RootMachineDir, mac.ToString(), options.STMFileName);
+		string filePath = Path.Combine(options.RootMachineDir, mac.ToString());
+		filePath = Path.Combine(fileName.Prepend(filePath).ToArray());
 
 		// Write to File
-		File.WriteAllText(filePath, csv);
+		File.WriteAllText(filePath, payload);
 
-		logger?.Information($"{mac} written: {csv}");
+		logger?.Information($"{mac} written: {payload}");
 
 		return Task.CompletedTask;
 	}
@@ -59,7 +71,7 @@ public class Runner
 		// map content to output type
 		var data = content.Split(options.CSVSeparator, StringSplitOptions.TrimEntries);
 		var result = new Dictionary<string, string>();
-		foreach (var prop in options.Format)
+		foreach (var prop in options.MTSFormat)
 		{
 			if (data.Length <= prop.Value)
 				continue;
@@ -74,8 +86,7 @@ public class Runner
 
 	public Runner(ICustomLogger? log, string? configFile = null)
 	{
-		if (configFile == null)
-			configFile = Path.Combine(Path.GetDirectoryName(Environment.ProcessPath!)!, "config.json");
+		configFile ??= Path.Combine(Path.GetDirectoryName(Environment.ProcessPath!)!, "config.json");
 
 		logger = log;
 
@@ -96,13 +107,13 @@ public class Runner
 		// authentication is optional
 		if (options.AuthMethod != null && options.AuthDataBase64 != null)
 		{
-			clientOptions.WithAuthentication(options.AuthMethod, Convert.FromBase64String(options.AuthDataBase64))
+			clientOptions.WithAuthentication(options.AuthMethod, Convert.FromBase64String(options.AuthDataBase64));
 		}
 
 		await client.ConnectAsync(clientOptions.Build(), cancellationToken);
 
 		await client.SubscribeAsync(new MqttClientSubscribeOptionsBuilder()
-			.WithTopicFilter(new MqttTopicFilterBuilder().WithTopic($"{options.RootTopic}/+/{options.InTopic}").Build())
+			.WithTopicFilter(new MqttTopicFilterBuilder().WithTopic($"{options.RootTopic}/+/{options.InTopic}/#").Build())
 			.Build(), cancellationToken);
 
 		logger?.Information($"MQTT: Connected to {options.Server}:{options.Port} as {options.ClientId}");
