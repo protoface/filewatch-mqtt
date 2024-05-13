@@ -19,7 +19,7 @@
 
     // required - no default set
     // each index can only be used once
-    "Format" : 
+    "MTSFormat" : 
     {
         "lorem": 0,
         "ipsum": 1,
