@@ -15,6 +15,7 @@ public struct Configuration()
 	}
 
 	[JsonRequired] public string RootMachineDir { get; set; } = string.Empty;
+	[JsonRequired] public string MacFilesDirName { get; set; } = string.Empty;
 	public string MTSFileName { get; set; } = "MacToServer.txt";
 	public string STMFileName { get; set; } = "ServerToMac.txt";
 	public string CSVSeparator { get; set; } = ",";
