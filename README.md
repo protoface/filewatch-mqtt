@@ -6,6 +6,7 @@
     "RootMachineDir": "C:\\tmp", // required - no default set    
     "MTSFileName" : "MacToServer.txt",
     "STMFileName" : "ServerToMac.txt",
+    "MacFilesDirName" : "", // required - no default set, location for saving machine production files, other than MTS & STM
     "CSVSeparator" : ",",
 
     // MQTT Config
