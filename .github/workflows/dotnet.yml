@@ -1,0 +1,41 @@
+# This workflow will build a .NET project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
+
+name: .NET
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet build -c Release --no-restore
+    - name: publish service
+      uses: actions/upload-artifact@v4
+      with:
+        name: service
+        path: PoC.Worker\bin\Release\net8.0-windows\win-x64
+    - name: publish console
+      uses: actions/upload-artifact@v4
+      with:
+        name: console
+        path: PoC.FileWatcherMQTT\bin\Release\net8.0
+    - name: publish core
+      uses: actions/upload-artifact@v4
+      with:
+        name: core
+        path: PoC.Runner\bin\Release\net8.0
