@@ -1,6 +1,5 @@
 ﻿{
-	// "RootMachineDir": "\\\\s-steiger3\\StgCCM\\MAC", // TODO: Fix Hostname - dont remember
-	"RootMachineDir": "C:\\StgCCM\\MAC", // TODO: Fix Hostname - dont remember
+	"RootMachineDir": "\\\\svrsteiger3\\StgCCM\\MAC",
 	"MTSFormat": { // TODO: Check Spec
 		"Status": 0,
 		"Version": 1,

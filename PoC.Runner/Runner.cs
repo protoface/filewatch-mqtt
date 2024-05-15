@@ -25,6 +25,10 @@ public sealed class Runner
 		if (topicSegments[1] != options.InTopic)
 			return Task.CompletedTask;
 
+		// check for mac exclusion
+		if (options.MacExclusions.Contains(mac))
+			return Task.CompletedTask;
+
 		// Get Payload
 		string payload = arg.ApplicationMessage.ConvertPayloadToString();
 
@@ -54,6 +58,10 @@ public sealed class Runner
 		// Extract mac from path
 		string? macString = Path.GetFileName(Path.GetDirectoryName(e.FullPath));
 		if (macString == null || !int.TryParse(macString, out int mac))
+			return;
+
+		// check for mac exclusion
+		if (options.MacExclusions.Contains(mac))
 			return;
 
 		// read file
