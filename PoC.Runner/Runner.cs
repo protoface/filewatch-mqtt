@@ -34,7 +34,7 @@ public sealed class Runner
 
 		// Build File Path
 		string filePath;
-		if (topicSegments[^1] != options.InTopic)
+		if (options.EnableFileUpload && topicSegments[^1] != options.InTopic)
 		{
 			filePath = Path.Combine(options.RootMachineDir, macString, options.MacFilesDirName, topicSegments[^1]);
 			if (!Directory.Exists(Path.GetDirectoryName(filePath)))
@@ -172,9 +172,12 @@ public sealed class Runner
 		}
 
 		// file uploads
-		await client.SubscribeAsync(new MqttClientSubscribeOptionsBuilder()
-			.WithTopicFilter(new MqttTopicFilterBuilder().WithTopic($"{options.RootTopic}/+/{options.InTopic}/+").Build())
-			.Build(), cancellationToken);
+		if (options.EnableFileUpload)
+		{
+			await client.SubscribeAsync(new MqttClientSubscribeOptionsBuilder()
+				.WithTopicFilter(new MqttTopicFilterBuilder().WithTopic($"{options.RootTopic}/+/{options.InTopic}/+").Build())
+				.Build(), cancellationToken);
+		}
 
 		// STM file upload
 		await client.SubscribeAsync(new MqttClientSubscribeOptionsBuilder()

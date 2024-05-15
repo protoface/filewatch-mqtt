@@ -35,4 +35,6 @@ public struct Configuration()
 	public string? AuthPwd { get; set; } = null;
 
 	public int[] MacExclusions { get; set; } = [];
+
+	public bool EnableFileUpload { get; set; } = false;
 }

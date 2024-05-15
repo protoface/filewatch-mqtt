@@ -29,8 +29,12 @@
         "amet": 4
     },
 
+    "EnableFileUpload": false,
+
+    "MacExclusions": [],
+
     // authentication is optional
-    "AuthMethod" : null,
-    "AuthDataBase64" : null
+    "AuthUser" : null,
+    "AuthPwd" : null
 }
 ```
