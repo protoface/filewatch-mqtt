@@ -10,30 +10,25 @@ public class Runner
 	readonly Configuration options;
 	readonly IMqttClient client = new MqttFactory().CreateMqttClient();
 	readonly ICustomLogger? logger;
-	Dictionary<int, string> lastMTS = new();
+	readonly Dictionary<int, string> lastMTS = [];
 
 	private Task Client_ApplicationMessageReceivedAsync(MqttApplicationMessageReceivedEventArgs arg)
 	{
-		string topic = arg.ApplicationMessage.Topic.TrimStart(options.RootTopic.ToCharArray());
-		string[] fileName = [];
+		string[] strings = arg.ApplicationMessage.Topic.TrimStart(options.RootTopic.ToCharArray()).Split('/', StringSplitOptions.RemoveEmptyEntries);
 
 		// Extract mac
-		// string macString = topic.TrimEnd(options.InTopic.ToCharArray()).Split('/', StringSplitOptions.RemoveEmptyEntries).Last();
-		string[] strings = topic.Split('/', StringSplitOptions.RemoveEmptyEntries);
 		string macString = strings[0];
-
-		if (strings[1] != options.InTopic)
+		if (!int.TryParse(macString, out var mac))
 			return Task.CompletedTask;
 
-		if (!int.TryParse(macString, out var mac))
+		if (strings[1] != options.InTopic)
 			return Task.CompletedTask;
 
 		// Get Payload
 		string payload = arg.ApplicationMessage.ConvertPayloadToString();
 
-
 		// Build File Path
-		string filePath = string.Empty;
+		string filePath;
 		if (strings[^1] != options.InTopic)
 		{
 			filePath = Path.Combine(options.RootMachineDir, macString, options.MacFilesDirName, strings[^1]);
@@ -42,7 +37,7 @@ public class Runner
 		}
 		else
 		{
-			filePath = Path.Combine(options.RootMachineDir, mac.ToString(), options.STMFileName);
+			filePath = Path.Combine(options.RootMachineDir, macString, options.STMFileName);
 		}
 
 		// Write to File
@@ -61,7 +56,7 @@ public class Runner
 			return;
 
 		// read file
-		string content = string.Empty;
+		string content;
 		try
 		{
 			content = File.ReadAllText(e.FullPath);
@@ -73,17 +68,16 @@ public class Runner
 		}
 
 		// Only publish when real changes occur
-		if (!lastMTS.ContainsKey(mac))
+		if (lastMTS.TryGetValue(mac, out string? value))
 		{
-			lastMTS.Add(mac, content);
+			if (content == value) // no change
+				return;
+
+			lastMTS[mac] = content;
 		}
 		else
 		{
-			if (content == lastMTS[mac])
-			{
-				return;
-			}
-			lastMTS[mac] = content;
+			lastMTS.Add(mac, content); // first publish
 		}
 
 		// map content to output type
@@ -104,15 +98,11 @@ public class Runner
 
 	public Runner(ICustomLogger? log, string? configFile = null)
 	{
-		configFile ??= Path.Combine(Path.GetDirectoryName(Environment.ProcessPath!)!, "config.json");
-
 		logger = log;
 
 		// find & load config
-		if (!File.Exists(configFile))
-			throw new FileNotFoundException(null, configFile);
+		configFile ??= Path.Combine(Path.GetDirectoryName(Environment.ProcessPath!)!, "config.json");
 		options = Configuration.FromJSON(File.ReadAllText(configFile));
-
 	}
 
 	public async Task Run(CancellationToken cancellationToken)
@@ -147,26 +137,27 @@ public class Runner
 		// connect & subscribe to MQTT
 		var clientOptions = new MqttClientOptionsBuilder()
 					.WithTcpServer(options.Server, options.Port)
-					//.WithTimeout(TimeSpan.FromSeconds(10))
-					//.WithKeepAlivePeriod(TimeSpan.FromSeconds(5))
 					.WithClientId(options.ClientId);
 
 		// authentication is optional
-		if (options.AuthMethod != null && options.AuthDataBase64 != null)
+		if (!string.IsNullOrEmpty(options.AuthUser) && !string.IsNullOrEmpty(options.AuthPwd))
 		{
-			clientOptions.WithAuthentication(options.AuthMethod, Convert.FromBase64String(options.AuthDataBase64));
+			clientOptions.WithCredentials(options.AuthUser, options.AuthPwd);
 		}
 
 		await client.ConnectAsync(clientOptions.Build(), cancellationToken);
 
 		if (!client.IsConnected)
 		{
-			logger?.Error($"MQTT: Failed to connect to {options.Server}:{options.Port} as {options.ClientId}");
-			throw new("Failed to connect to mqtt");
+			throw new($"MQTT: Failed to connect to {options.Server}:{options.Port} as {options.ClientId}");
 		}
 
 		await client.SubscribeAsync(new MqttClientSubscribeOptionsBuilder()
 			.WithTopicFilter(new MqttTopicFilterBuilder().WithTopic($"{options.RootTopic}/+/{options.InTopic}/+").Build())
+			.Build(), cancellationToken);
+
+		await client.SubscribeAsync(new MqttClientSubscribeOptionsBuilder()
+			.WithTopicFilter(new MqttTopicFilterBuilder().WithTopic($"{options.RootTopic}/+/{options.InTopic}").Build())
 			.Build(), cancellationToken);
 
 		logger?.Information($"MQTT: Connected to {options.Server}:{options.Port} as {options.ClientId}");

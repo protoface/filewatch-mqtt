@@ -31,6 +31,6 @@ public struct Configuration()
 	[JsonRequired]
 	public Dictionary<string, int> MTSFormat { get; set; } = new();
 
-	public string? AuthMethod { get; set; } = null;
-	public string? AuthDataBase64 { get; set; } = null;
+	public string? AuthUser { get; set; } = null;
+	public string? AuthPwd { get; set; } = null;
 }

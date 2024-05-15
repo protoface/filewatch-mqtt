@@ -1,12 +1,13 @@
 ﻿{
-	"RootMachineDir": "C:\\StgCCM\\MAC",
+	// "RootMachineDir": "\\\\s-steiger3\\StgCCM\\MAC", // TODO: Fix Hostname - dont remember
+	"RootMachineDir": "C:\\StgCCM\\MAC", // TODO: Fix Hostname - dont remember
 	"MTSFormat": { // TODO: Check Spec
 		"Status": 0,
 		"Version": 1,
 		"Teilung": 2,
 		"User": 3,
 		"AktuelleProduktion": 4,
-		"Message": 5,
+		"Message": 5
 		// "5": 6,
 		// "0": 7,
 		// "0": 8,
@@ -15,9 +16,12 @@
 		// "50": 11,
 		// "1": 12,
 		// "-2": 13,
-		"LetzteProduktion": 14
+		// "LetzteProduktion": 14
 	},
-	"RootTopic": "stgccm/mac",
 	"MTSFileName": "MACTOSVR.TXT",
-	"STMFileName": "SvrToMac.txt"
+	"STMFileName": "SvrToMac.txt",
+	"MacFilesDirName": "prodFiles",
+	"RootTopic": "stgccm/mac",
+	"AuthUser": "WatchPuppy",
+	"AuthPwd": "poc"
 }
