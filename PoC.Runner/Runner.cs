@@ -5,23 +5,24 @@ using System.Text.Json;
 
 namespace PoC.Runner;
 
-public class Runner
+public sealed class Runner
 {
 	readonly Configuration options;
 	readonly IMqttClient client = new MqttFactory().CreateMqttClient();
 	readonly ICustomLogger? logger;
 	readonly Dictionary<int, string> lastMTS = [];
+	CancellationToken cancellationToken;
 
 	private Task Client_ApplicationMessageReceivedAsync(MqttApplicationMessageReceivedEventArgs arg)
 	{
-		string[] strings = arg.ApplicationMessage.Topic.TrimStart(options.RootTopic.ToCharArray()).Split('/', StringSplitOptions.RemoveEmptyEntries);
+		string[] topicSegments = arg.ApplicationMessage.Topic[options.RootTopic.Length..].Split('/', StringSplitOptions.RemoveEmptyEntries);
 
-		// Extract mac
-		string macString = strings[0];
+		// Extract mac from topic
+		string macString = topicSegments[0];
 		if (!int.TryParse(macString, out var mac))
 			return Task.CompletedTask;
 
-		if (strings[1] != options.InTopic)
+		if (topicSegments[1] != options.InTopic)
 			return Task.CompletedTask;
 
 		// Get Payload
@@ -29,9 +30,9 @@ public class Runner
 
 		// Build File Path
 		string filePath;
-		if (strings[^1] != options.InTopic)
+		if (topicSegments[^1] != options.InTopic)
 		{
-			filePath = Path.Combine(options.RootMachineDir, macString, options.MacFilesDirName, strings[^1]);
+			filePath = Path.Combine(options.RootMachineDir, macString, options.MacFilesDirName, topicSegments[^1]);
 			if (!Directory.Exists(Path.GetDirectoryName(filePath)))
 				Directory.CreateDirectory(Path.GetDirectoryName(filePath)!);
 		}
@@ -92,8 +93,17 @@ public class Runner
 
 		// publish to MQTT
 		string payload = JsonSerializer.Serialize(result, JsonContext.Default.DictionaryStringString);
-		await client.PublishStringAsync($"{options.RootTopic}/{mac}/{options.OutTopic}", payload);
-		logger?.Information($"{mac} published: {payload}");
+		MqttClientPublishResult mqttClientPublishResult = await client.PublishStringAsync($"{options.RootTopic}/{mac}/{options.OutTopic}", payload);
+		if (mqttClientPublishResult.IsSuccess)
+		{
+
+			logger?.Information($"{mac} published: {payload}");
+		}
+		else
+		{
+			logger?.Error($"Failed to publish {mac}: {payload}");
+		}
+
 	}
 
 	public Runner(ICustomLogger? log, string? configFile = null)
@@ -105,9 +115,10 @@ public class Runner
 		options = Configuration.FromJSON(File.ReadAllText(configFile));
 	}
 
-	public async Task Run(CancellationToken cancellationToken)
+	public async Task Run(CancellationToken ct)
 	{
-		await ConnectMQTT(cancellationToken);
+		cancellationToken = ct;
+		await ConnectMQTT();
 		client.DisconnectedAsync += Client_DisconnectedAsync;
 
 		// subscribe to changes
@@ -123,16 +134,16 @@ public class Runner
 		rootWatcher.Changed += MTS_Changed;
 		client.ApplicationMessageReceivedAsync += Client_ApplicationMessageReceivedAsync;
 
-		cancellationToken.WaitHandle.WaitOne();
+		ct.WaitHandle.WaitOne();
 	}
 
 	private async Task Client_DisconnectedAsync(MqttClientDisconnectedEventArgs arg)
 	{
 		logger?.Warning($"MQTT: Disconnected. Reason: {arg.Reason}. Reconnecting");
-		await ConnectMQTT(default);
+		await ConnectMQTT();
 	}
 
-	private async Task ConnectMQTT(CancellationToken cancellationToken)
+	private async Task ConnectMQTT()
 	{
 		// connect & subscribe to MQTT
 		var clientOptions = new MqttClientOptionsBuilder()
@@ -152,10 +163,12 @@ public class Runner
 			throw new($"MQTT: Failed to connect to {options.Server}:{options.Port} as {options.ClientId}");
 		}
 
+		// file uploads
 		await client.SubscribeAsync(new MqttClientSubscribeOptionsBuilder()
 			.WithTopicFilter(new MqttTopicFilterBuilder().WithTopic($"{options.RootTopic}/+/{options.InTopic}/+").Build())
 			.Build(), cancellationToken);
 
+		// STM file upload
 		await client.SubscribeAsync(new MqttClientSubscribeOptionsBuilder()
 			.WithTopicFilter(new MqttTopicFilterBuilder().WithTopic($"{options.RootTopic}/+/{options.InTopic}").Build())
 			.Build(), cancellationToken);
