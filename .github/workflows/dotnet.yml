@@ -23,14 +23,19 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
-      run: dotnet build --no-restore
+      run: dotnet build -c Release --no-restore
     - name: publish service
       uses: actions/upload-artifact@v4
       with:
         name: service
-        path: PoC.Worker\bin\Debug\net8.0-windows\win-x64
+        path: PoC.Worker\bin\Release\net8.0-windows\win-x64
     - name: publish console
       uses: actions/upload-artifact@v4
       with:
         name: console
-        path: PoC.FileWatcherMQTT\bin\Debug\net8.0\
+        path: PoC.FileWatcherMQTT\bin\Release\net8.0
+    - name: publish core
+      uses: actions/upload-artifact@v4
+      with:
+        name: core
+        path: PoC.Runner\bin\Release\net8.0
