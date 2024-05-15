@@ -33,4 +33,6 @@ public struct Configuration()
 
 	public string? AuthUser { get; set; } = null;
 	public string? AuthPwd { get; set; } = null;
+
+	public int[] MacExclusions { get; set; } = [];
 }
