@@ -24,3 +24,13 @@ jobs:
       run: dotnet restore
     - name: Build
       run: dotnet build --no-restore
+    - name: publish service
+      uses: actions/upload-artifact@v4
+      with:
+        name: service
+        path: PoC.Worker\bin\Debug\net8.0-windows\win-x64
+    - name: publish console
+      uses: actions/upload-artifact@v4
+      with:
+        name: console
+        path: PoC.FileWatcherMQTT\bin\Debug\net8.0\
